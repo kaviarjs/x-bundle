@@ -1,7 +1,8 @@
 {
   "name": "@kaviar/x-bundle",
   "version": "1.0.0",
-  "description": "Kaviar X Bundle",
+  "private": true,
+  "description": "Kaviar is the framework. X is the opinion. Feature-rich solution for rapid prototyping.",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "bson": "^4.0.4",
+    "chalk": "^4.1.0",
     "date-fns": "^2.14.0"
   },
   "peerDependencies": {
@@ -39,14 +41,14 @@
   },
   "devDependencies": {
     "@kaviar/core": "^1.0.2",
-    "@kaviar/loader": "^1.0.0",
-    "@kaviar/logger-bundle": "^1.0.0",
     "@kaviar/email-bundle": "^1.0.0",
     "@kaviar/executor": "^1.0.0",
+    "@kaviar/loader": "^1.0.0",
+    "@kaviar/logger-bundle": "^1.0.0",
     "@kaviar/mongo-bundle": "^1.0.0",
-    "@kaviar/validator": "^1.0.0",
     "@kaviar/nova": "^1.0.0",
     "@kaviar/security-bundle": "^1.0.0",
+    "@kaviar/validator": "^1.0.0",
     "@types/chai": "^4.2.3",
     "@types/chai-as-promised": "^7.1.2",
     "@types/graphql": "^0.11.3",
@@ -60,9 +62,10 @@
     "eslint": "^6.6.0",
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-prettier": "3.1.1",
+    "graphql": "^15.3.0",
     "jest": "^26.0.0",
     "jest-junit": "^10.0.0",
-    "graphql": "^15.3.0",
+    "mongodb": "^3.6.0",
     "prettier": "^2.0.5",
     "source-map-support": "^0.5.13",
     "typedoc": "^0.15.0",

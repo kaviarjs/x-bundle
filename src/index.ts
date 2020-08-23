@@ -1,6 +1,9 @@
 import "./validators/declarations";
 
 export * from "./executors";
+export * from "./constants";
+export * from "./crud/models";
 export * from "./XBundle";
 export * from "./services/Router";
-export { execute, bundle } from "@kaviar/executor";
+export { execute, group } from "@kaviar/executor";
+export { BaseBundle } from "./models/BaseBundle";

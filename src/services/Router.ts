@@ -1,6 +1,4 @@
 import { Inject } from "@kaviar/core";
-import { X_SETTINGS, APPLICATION_URL } from "../constants";
-import { IXBundleConfig } from "../defs";
 
 /**
  * This router is mostly used by emails and others to properly link to your application url
@@ -8,7 +6,7 @@ import { IXBundleConfig } from "../defs";
 export class Router {
   baseUrl: string;
 
-  constructor(@Inject(APPLICATION_URL) baseUrl: string) {
+  constructor(@Inject("%APP_URL%") baseUrl: string) {
     if (baseUrl.endsWith("/")) {
       this.baseUrl = baseUrl.slice(0, -1);
     } else {
@@ -16,6 +14,11 @@ export class Router {
     }
   }
 
+  /**
+   * The router transforms the route "/path/:variable", { variable: "x" } to "/path/x"
+   * @param route
+   * @param variables
+   */
   path(route, variables: RouteVariables = {}) {
     // TODO: make it work with query params also: ?userId=:userId
 

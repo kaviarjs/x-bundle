@@ -1,8 +1,8 @@
 export default {
   typeDefs: `
     input QueryInput {
-      filters: JSON!
-      options: QueryOptionsInput!
+      filters: JSON
+      options: QueryOptionsInput
     }
 
     input QueryOptionsInput {
@@ -12,12 +12,12 @@ export default {
     }
 
     input DocumentUpdateInput {
-      _id: ID!
+      _id: ObjectId!
       dataSet: JSON!
     }
 
     input DocumentDeleteInput {
-      _id: ID!
+      _id: ObjectId!
     }
   `,
 };

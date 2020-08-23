@@ -5,9 +5,9 @@ import { ObjectId } from "bson";
 export default {
   typeDefs: `scalar ObjectId`,
   resolvers: {
-    Date: new GraphQLScalarType({
+    ObjectId: new GraphQLScalarType({
       name: "ObjectId",
-      description: "Date Custom scalar type",
+      description: "ObjectId custom scalar type",
       parseValue(value) {
         return new ObjectId(value);
       },

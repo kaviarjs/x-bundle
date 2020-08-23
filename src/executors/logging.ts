@@ -2,6 +2,9 @@ import { Constructor } from "@kaviar/core";
 import { LoggerService, LogLevel } from "@kaviar/logger-bundle";
 import { getResult } from "@kaviar/executor";
 
+/**
+ * Logs information about the request: arguments, userId
+ */
 export function LogRequest() {
   return async function (_, args, ctx, ast) {
     const logger: LoggerService = ctx.container.get(LoggerService);
@@ -31,6 +34,9 @@ export function LogRequestJSON() {
   };
 }
 
+/**
+ * Logs the response with the result as log's context
+ */
 export function LogResponse() {
   return async function (_, args, ctx, ast) {
     const logger: LoggerService = ctx.container.get(LoggerService);
@@ -42,6 +48,9 @@ export function LogResponse() {
   };
 }
 
+/**
+ * Logs the current result in a JSON.stringified manner
+ */
 export function LogResponseJSON() {
   return async function (_, args, ctx, ast) {
     const logger: LoggerService = ctx.container.get(LoggerService);

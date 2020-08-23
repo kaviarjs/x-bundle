@@ -1,6 +1,7 @@
 import { Constructor } from "@kaviar/core";
-import { PermissionSearchFilter } from "@kaviar/security-bundle";
 import {
+  IPermissionSearchFilter,
+  PERMISSION_DEFAULT_DOMAIN,
   UserNotAuthorizedException,
   PermissionService,
 } from "@kaviar/security-bundle";
@@ -18,7 +19,7 @@ export type PermissionResolver = (
   args,
   ctx,
   ast
-) => Promise<PermissionSearchFilter>;
+) => Promise<IPermissionSearchFilter>;
 
 export function CheckPermission(
   permissions: string | string[] | PermissionResolver
@@ -40,6 +41,7 @@ export function CheckPermission(
 
     if (!search.userId) {
       search.userId = ctx.userId;
+      search.domain = PERMISSION_DEFAULT_DOMAIN;
     }
 
     const hasPermissions = permissionService.has(search);

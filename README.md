@@ -1,83 +1,25 @@
-# X-Bundle
+<h1 align="center">KAVIAR X-WAY BUNDLE</h1>
 
-Because speed. A list of executors meant to ease your life with the:
+<p align="center">
+  <a href="https://travis-ci.org/kaviarjs/x-bundle">
+    <img src="https://api.travis-ci.org/kaviarjs/x-bundle.svg?branch=master" />
+  </a>
+  <a href="https://coveralls.io/github/kaviarjs/x-bundle?branch=master">
+    <img src="https://coveralls.io/repos/github/kaviarjs/x-bundle/badge.svg?branch=master" />
+  </a>
+</p>
 
-## ENV File
+<br />
+<br />
 
-```typescript
-```
+The X-way is a set of tools that beautifully bridges the gap between your API Layer (GraphQL), your database (MongoDB), and your service layer. It is thought with fast-prototyping in mind but code scalability as well.
 
-## Go
+## Install
 
 ```bash
-
+npm install --save @kaviar/x-bundle
 ```
 
-- MongoBundle
-- Logger
-- Validator
-- Apollo Bundle
-- Apollo Security
-- Security
-- Security Mongo
-- Executor
-- Loader
+## [Documentation](./DOCUMENTATION.md)
 
-## Validators
-
-# Unique Field Validator
-
-```typescript
-import { Schema, Is, a } from "@kaviar/validator";
-
-@Schema()
-class User {
-  @Is(
-    a.string().uniqueField({
-      collection: UsersCollection,
-      field: "username",
-    })
-  )
-  username: string;
-}
-```
-
-# Date Transformer
-
-If the value is a string or number and you want it to automatically cast it.
-
-```typescript
-import { Schema, Is, a } from "@kaviar/validator";
-
-@Schema()
-class User {
-  @Is(a.date().format("DD/MM/YYYY"))
-  birthday: Date;
-}
-```
-
-## Document Executors
-
-- Executors
-- ToNovaOne(() => {})
-- ToNova
-- ToNovaFromResultId
-- ToModel
-- Validate
-- CheckDocumentId(Collection, idResolver);
-- CheckLoggedIn
-- CheckPermission([Permissions.ADMIN, Permissions.ADD_POST])
-- CheckPermission(async (\_, args, ctx) => {
-  return {
-  permission: Permission.POST_ADD,
-  domain: Domains.POSTS,
-  domainIdentifier: args.\_id
-  }
-  })
-- LogAction
-- ToService<PostService>(PostService, "addPost", ArgumentMapper)
-- CollectionInsertOne(Collection, () => {});
-<!-- - FromCollection(Collection, () => {}); to respond with the collection element's data? -->
-- CollectionUpdateOne(Collection, idResolver, mutateResolver);
-- CollectionDeleteOne(Collection, idResolver);
-- LogResult
+[Click here to go to the documentation](./DOCUMENTATION.md)

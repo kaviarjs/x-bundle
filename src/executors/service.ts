@@ -11,13 +11,12 @@ export function ToService<T>(
 
   return async function (_, args, ctx, ast) {
     const service: T = ctx.container.get(serviceClass);
-
     if (!service[methodName]) {
       throw new Error(
         `[ToService] Method ${methodName} was not found on the provided service.`
       );
     }
 
-    return service[methodName](...argumentMapper(args, ctx, ast));
+    return service[methodName].call(service, ...argumentMapper(args, ctx, ast));
   };
 }
