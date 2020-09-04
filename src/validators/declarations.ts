@@ -1,8 +1,8 @@
-import "@kaviar/validator";
+import "@kaviar/validator-bundle";
 import { IUniqueFieldValidationConfig } from "./UniqueFieldValidationMethod";
 import { ObjectIdSchema } from "./ObjectId.validator";
 
-declare module "@kaviar/validator" {
+declare module "@kaviar/validator-bundle" {
   export module yup {
     export interface DateSchema<T> {
       /**

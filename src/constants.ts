@@ -8,14 +8,15 @@ ___   ___      ____    __    ____  ___   ____    ____
 \  \ /  /      \   \  /  \  /   / /   \  \   \  /   / 
  \  V  /   _____\   \/    \/   / /  ^  \  \   \/   /  
   >   <   |______\            / /  /_\  \  \_    _/   
- /  .  \          \    /\    / /  _____  \   |  |     
-/__/ \__\          \__/  \__/ /__/     \__\  |__|     
+ /  .  \          \    /\    / /  _____  \   |  |    
+/__/ \__\          \__/  \__/ /__/     \__\  |__|  
+
+                  by KaviarJS
 `;
 
 // Look, I know they may be cheesy, but who doesn't love cheese?
 // Some ideas to bring some fun into our digital lives.
 // Feel free to come up with better ones and submit a PR
-
 export const RANDOM_GEEKIE_DEV_QUOTES = [
   "%name%, you are an intellectual badass.",
   "You are in control, %name%.",

@@ -1,6 +1,6 @@
 import { Bundle as CoreBundle } from "@kaviar/core";
-import { Loader } from "@kaviar/loader";
-import { ValidatorService } from "@kaviar/validator";
+import { Loader } from "@kaviar/graphql-bundle";
+import { ValidatorService } from "@kaviar/validator-bundle";
 
 export abstract class BaseBundle<T> extends CoreBundle<T> {
   async setupBundle(config: {

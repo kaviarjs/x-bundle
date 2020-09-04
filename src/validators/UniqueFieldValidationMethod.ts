@@ -1,4 +1,4 @@
-import { yup, IValidationMethod } from "@kaviar/validator";
+import { yup, IValidationMethod } from "@kaviar/validator-bundle";
 import { Collection } from "@kaviar/mongo-bundle";
 import { ContainerInstance, Constructor } from "@kaviar/core";
 

@@ -1,6 +1,6 @@
 import { Constructor } from "@kaviar/core";
 import { LoggerService, LogLevel } from "@kaviar/logger-bundle";
-import { getResult } from "@kaviar/executor";
+import { getResult } from "@kaviar/graphql-bundle";
 
 /**
  * Logs information about the request: arguments, userId

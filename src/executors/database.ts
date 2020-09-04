@@ -1,5 +1,5 @@
 import { Collection, DocumentNotFoundException } from "@kaviar/mongo-bundle";
-import { getResult } from "@kaviar/executor";
+import { getResult } from "@kaviar/graphql-bundle";
 import { IAstToQueryOptions, IParamaterableObject } from "@kaviar/nova";
 import { Constructor } from "@kaviar/core";
 

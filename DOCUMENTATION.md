@@ -334,6 +334,16 @@ class User {
 }
 ```
 
+## Routers
+
+The XBundle has two routers you can use, one is for the (ROOT) API endpoint the other is for your main application page:
+
+```ts
+import { APP_ROUTER, ROOT_ROUTER, Router } from "@kaviar/x-bundle";
+
+const appRouter = container.get<Router>(APP_ROUTER);
+```
+
 ## CRUD Interfaces
 
 If we want to go fast, we sometimes need to be "less specific" and go around some of GraphQL principles. Meaning that for filters we can work with a `JSON` and for `dataSet` on update
@@ -381,41 +391,37 @@ export default /* GraphQL */ `
 Below you have a complete CRUD that later you can easily adapt to have type-safety at GraphQL level. This is very useful when you are generating lots of them.
 
 ```ts
-import { group } from "@kaviar/executor";
 import * as X from "@kaviar/x-bundle";
 
 export default {
-  Query: group([], {
-    adminPostsFindOne: [X.ToNovaOne(PostsCollection)],
-    adminPostsFind: [X.ToNova(PostsCollection)],
-    adminPostsCount: [X.ToCollectionCount(PostsCollection)],
-  }),
-  Mutation: group([], {
-    adminPostsInsertOne: [
-      X.ToDocumentInsert(PostsCollection),
-      X.ToNovaByID(PostsCollection),
-    ],
-    adminPostsUpdateOne: [
-      X.CheckDocumentExists(PostsCollection),
-      X.ToDocumentUpdateByID(PostsCollection),
-      X.ToNovaByID(PostsCollection),
-    ],
-    adminPostsDeleteOne: [
-      X.CheckDocumentExists(PostsCollection),
-      X.ToDocumentDeleteByID(PostsCollection),
-      X.ToNovaByID(PostsCollection),
-    ],
-  }),
+  Query: [
+    [],
+    {
+      adminPostsFindOne: [X.ToNovaOne(PostsCollection)],
+      adminPostsFind: [X.ToNova(PostsCollection)],
+      adminPostsCount: [X.ToCollectionCount(PostsCollection)],
+    },
+  ],
+  Mutation: [
+    [],
+    {
+      adminPostsInsertOne: [
+        X.ToDocumentInsert(PostsCollection),
+        X.ToNovaByID(PostsCollection),
+      ],
+      adminPostsUpdateOne: [
+        X.CheckDocumentExists(PostsCollection),
+        X.ToDocumentUpdateByID(PostsCollection),
+        X.ToNovaByID(PostsCollection),
+      ],
+      adminPostsDeleteOne: [
+        X.CheckDocumentExists(PostsCollection),
+        X.ToDocumentDeleteByID(PostsCollection),
+        X.ToNovaByID(PostsCollection),
+      ],
+    },
+  ],
 };
 ```
 
 We offer a set of tools to build a powerful layer between Apollo and your Service layer. The magic and the true quality of your software product will rely in the service layer, let X-way do the rest.
-
-```
-___   ___      ____    __    ____  ___   ____    ____
-\  \ /  /      \   \  /  \  /   / /   \  \   \  /   /
- \  V  /   _____\   \/    \/   / /  ^  \  \   \/   /
-  >   <   |______\            / /  /_\  \  \_    _/
- /  .  \          \    /\    / /  _____  \   |  |
-/__/ \__\          \__/  \__/ /__/     \__\  |__|
-```

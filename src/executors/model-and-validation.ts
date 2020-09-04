@@ -1,4 +1,4 @@
-import { ValidatorService } from "@kaviar/validator";
+import { ValidatorService } from "@kaviar/validator-bundle";
 import { plainToClass } from "class-transformer";
 
 export interface IToModelExecutorOptions {

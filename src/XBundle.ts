@@ -1,8 +1,8 @@
 import { Bundle, MissingParameterException } from "@kaviar/core";
-import { ValidatorService } from "@kaviar/validator";
+import { ValidatorService } from "@kaviar/validator-bundle";
 import { MongoBundle } from "@kaviar/mongo-bundle";
 import { LoggerBundle } from "@kaviar/logger-bundle";
-import { Loader } from "@kaviar/loader";
+import { Loader } from "@kaviar/graphql-bundle";
 
 import { UniqueFieldValidationMethod } from "./validators/UniqueFieldValidationMethod";
 import { DateTransformer } from "./validators/DateTransformer";
@@ -24,7 +24,6 @@ export class XBundle extends Bundle<IXBundleConfig> {
   dependencies = [MongoBundle, LoggerBundle];
 
   defaultConfig = {
-    welcomeMessage: "Welcome back!",
     logo: X_WAY,
     appUrl: "http://localhost:3000",
     rootUrl: "http://localhost:4000",

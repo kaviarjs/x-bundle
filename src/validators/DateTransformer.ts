@@ -1,4 +1,4 @@
-import { yup, IValidationTransformer } from "@kaviar/validator";
+import { yup, IValidationTransformer } from "@kaviar/validator-bundle";
 import { parse } from "date-fns";
 
 type IDateTransformerConfig = string;
