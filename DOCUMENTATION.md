@@ -1,6 +1,6 @@
 The X-way is a set of tools that beautifully bridges the gap between your API Layer (GraphQL), your database (MongoDB), and your service layer. It is thought with fast-prototyping in mind but code scalability as well.
 
-It has the following tools
+It has the following tools:
 
 - Apollo Server Executors (CRUD Operations, Security Checks, Service Delegation)
 - Apollo Server Scalars (Date, ObjectId)
@@ -12,63 +12,28 @@ The family of X-way bundles is currently composed of:
 - X-Generator which uses Kaviar's Terminal Technology to develop applications fast.
 - X-Password-Bundle which links Security, Mongo, Apollo to create a unified experience
 
-## Folder Structure
+## Install
 
-This folder structure is thought through to support modern-web development with microservices in mind.
+```
+npm i @kaviar/x-bundle
+```
 
-```yaml
-- {projectRoot}
-  - microservices
-    - {microservice}
-      - src
-        - bundles
-          - {YourBundle}
-            - __tests__
-            - collections
-            - events
-            - exceptions
-            - fixtures
-            - graphql
-              - entities
-                - {Entity}
-                  - {Entity}.graphql.ts
-                  - {Entity}.resolvers.ts
-              - inputs
-                - {Input}.graphql.ts
-              - mutations/queries
-                - {mutationName}
-                  - {mutationName}.graphql.ts
-                  - {mutationName}.resolvers.ts
-              - index.ts
-                - Loads resolvers and .graphql.ts files automatically
-            - listeners
-              - {Listener}.listener.ts
-            - server-routes
-              - {routeName}.route.ts
-            - services
-              - inputs
-                - {Input}.input.ts
-              - {Service}.service.ts
-            - validators
-              - {Validator}.validator.ts
-            - constants.ts
-            - defs.ts
-            - {YourBundle}.ts
-        - startup
-          - index.ts
-            - Initialises the kernel imported from `kernel.ts` after all bundles have been imported
-          - env.ts
-            - Reads environment variables and exports an interfaced module)
-          - kernel.ts
-            - Instantiates the kernel end exports it. Initialisation is done index.ts
-          - bundles
-            - {your}.ts
-              - Adds the specified bundle to the kernel by importing the kernel and using kernel.addBundle()
-      - package.json
-      - README.md
+```ts title="kernel.ts"
+import { XBundle } from "@kaviar/x-bundle";
 
-  - package.json
-  - README.md
+const kernel = new Kernel({
+  bundles: [
+    new XBundle({
+      // You should take these from environment, the reason we ask them is for easy routing
+      // However, they are optional.
+
+      // The URL of the application, your website (helpful for other bundles in the X-way ecosystem)
+      appUrl: "http://localhost:3000",
+      // The URL of the API endpoint
+      rootUrl: "http://localhost:4000",
+    }),
+  ],
+});
 ```
 
 ## Executors
@@ -83,9 +48,9 @@ We use MongoDB Nova for fetching relational data. The Nova package has a way to 
 import * as X from "@kaviar/x-bundle";
 
 export default {
-  Query: execute({
+  Query: {
     doSomething: [X.ToNova(CollectionClass)],
-  }),
+  },
 };
 ```
 
