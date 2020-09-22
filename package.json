@@ -1,6 +1,6 @@
 {
   "name": "@kaviar/x-bundle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "X-way is a feature-rich solution with fast prototyping in mind for KaviarJS",
   "main": "dist/index.js",
   "repository": {
@@ -35,7 +35,7 @@
     "@kaviar/security-bundle": "^1.0.0",
     "@kaviar/logger-bundle": "^1.0.0",
     "@kaviar/graphql-bundle": "^1.0.0",
-    "graphql": "^15.3.0"
+    "graphql": "^15.3.0 || ^14.0.0"
   },
   "devDependencies": {
     "@kaviar/core": "^1.0.2",
