@@ -15,7 +15,7 @@ export class QueryOptionsInput {
 
 export class DocumentUpdateInput {
   _id: any;
-  dataSet: {
+  modifier: {
     [key: string]: any;
   };
 }

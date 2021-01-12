@@ -7,7 +7,7 @@ import { Loader } from "@kaviar/graphql-bundle";
 import { UniqueFieldValidationMethod } from "./validators/UniqueFieldValidationMethod";
 import { DateTransformer } from "./validators/DateTransformer";
 import CRUDTypes from "./crud/types";
-import ObjectIdScalar from "./scalars/ObjectId.scalar";
+import scalars from "./scalars";
 import {
   X_SETTINGS,
   X_WAY,
@@ -52,7 +52,7 @@ export class XBundle extends Bundle<IXBundleConfig> {
     validator.addMethod(UniqueFieldValidationMethod);
     validator.addTransformer(DateTransformer);
 
-    loader.load([CRUDTypes, ObjectIdScalar]);
+    loader.load([CRUDTypes, ...scalars]);
   }
 
   public displayWelcomeMessage() {

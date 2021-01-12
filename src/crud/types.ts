@@ -1,7 +1,7 @@
 export default {
   typeDefs: `
     input QueryInput {
-      filters: JSON
+      filters: EJSON
       options: QueryOptionsInput
     }
 
@@ -13,11 +13,7 @@ export default {
 
     input DocumentUpdateInput {
       _id: ObjectId!
-      dataSet: JSON!
-    }
-
-    input DocumentDeleteInput {
-      _id: ObjectId!
+      modifier: EJSON!
     }
   `,
 };

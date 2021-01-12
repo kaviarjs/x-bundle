@@ -1,5 +1,6 @@
 import "./validators/declarations";
 
+export { EJSON } from "@kaviar/ejson";
 export * from "./executors";
 export * from "./constants";
 export * from "./crud/models";

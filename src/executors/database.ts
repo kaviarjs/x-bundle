@@ -2,6 +2,7 @@ import { Collection, DocumentNotFoundException } from "@kaviar/mongo-bundle";
 import { getResult } from "@kaviar/graphql-bundle";
 import { IAstToQueryOptions, IParamaterableObject } from "@kaviar/nova";
 import { Constructor } from "@kaviar/core";
+import { EJSON } from "@kaviar/ejson";
 
 /**
  * If your input is of "QueryInput" it will automatically apply the filters and options
@@ -115,9 +116,9 @@ export function ToDocumentInsert(
 ) {
   return async function (_, args, ctx, ast) {
     const collection = ctx.container.get(collectionClass);
-    const document = await collection.insertOne(args[field]);
+    const result = await collection.insertOne(args[field]);
 
-    return document.insertedId;
+    return result.insertedId;
   };
 }
 
@@ -136,9 +137,7 @@ export function ToDocumentUpdateByID(
   }
   if (!mutateResolver) {
     mutateResolver = (args) => {
-      return {
-        $set: args.dataSet,
-      };
+      return args.modifier;
     };
   }
 

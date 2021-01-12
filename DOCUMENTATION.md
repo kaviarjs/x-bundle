@@ -249,9 +249,16 @@ class ServiceClass {
 
 ## Scalars
 
-The only scalar we provide in this package is:
+We provide the following scalars
 
-- ObjectId
+### ObjectId
+
+This will transform the ObjectId into a string and from a string to an ObjectId from bson, compatible with MongoDB.
+
+### EJSON
+
+We will use `EJSON` as a mechanism to allow rich data to be sent, including Dates, ObjectIds, RegEx and other fine ones.
+
 
 What it does is pretty simple, it converts to ObjectId the strings it receives from GraphQL so it's easy for you to do searching and other cool stuff without worrying about it.
 

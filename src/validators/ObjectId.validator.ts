@@ -1,5 +1,5 @@
 import { yup } from "@kaviar/validator-bundle";
-import { ObjectId } from "bson";
+import { ObjectId } from "@kaviar/ejson";
 
 export class ObjectIdSchema extends yup.mixed {
   constructor() {

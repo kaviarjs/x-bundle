@@ -22,13 +22,13 @@
     "gen-doc": "typedoc ./src/index.ts --exclude ./src/__tests__ --out typeDocs --tsconfig tsconfig.json"
   },
   "dependencies": {
-    "bson": "^4.0.4",
+    "@kaviar/ejson": "^1.2.0",
     "chalk": "^4.1.0",
-    "date-fns": "^2.14.0"
+    "date-fns": "^2.14.0",
+    "graphql-type-json": "^0.3.2"
   },
   "peerDependencies": {
     "@kaviar/core": "^1.0.2",
-    "@kaviar/email-bundle": "^1.0.0",
     "@kaviar/nova": "^1.0.0",
     "@kaviar/mongo-bundle": "^1.0.0",
     "@kaviar/validator-bundle": "^1.0.0",
@@ -49,7 +49,7 @@
     "@types/chai": "^4.2.3",
     "@types/chai-as-promised": "^7.1.2",
     "@types/graphql": "^0.11.3",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.3",
     "@types/node": "^8.0.28",
     "@typescript-eslint/eslint-plugin": "2.3.0",
     "@typescript-eslint/parser": "2.3.0",
@@ -59,7 +59,7 @@
     "eslint": "^6.6.0",
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-prettier": "3.1.1",
-    "graphql": "^15.3.0",
+    "graphql": "^15.4.0",
     "jest": "^26.0.0",
     "jest-junit": "^10.0.0",
     "mongodb": "^3.6.0",
