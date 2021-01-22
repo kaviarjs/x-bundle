@@ -4,6 +4,11 @@ import { IAstToQueryOptions, IParamaterableObject } from "@kaviar/nova";
 import { Constructor } from "@kaviar/core";
 import { EJSON } from "@kaviar/ejson";
 
+const defaultNovaOptionsResolver = async (_, args) => ({
+  filters: args.query?.filters || {},
+  options: args.query?.options || {},
+});
+
 /**
  * If your input is of "QueryInput" it will automatically apply the filters and options
  * @param collectionClass
@@ -67,11 +72,6 @@ export function ToNovaByResultID(
   };
 }
 
-const defaultNovaOptionsResolver = async (_, args) => ({
-  filters: args.query?.filters || {},
-  options: args.query?.options || {},
-});
-
 export function ToCollectionCount(
   collectionClass: Constructor<Collection<any>>,
   filterResolver?: (_, args, ctx, ast) => Promise<any>
@@ -112,7 +112,7 @@ export function CheckDocumentExists(
 
 export function ToDocumentInsert(
   collectionClass: Constructor<Collection<any>>,
-  field: string = "document"
+  field = "document"
 ) {
   return async function (_, args, ctx, ast) {
     const collection = ctx.container.get(collectionClass);
