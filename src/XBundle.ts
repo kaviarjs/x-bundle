@@ -40,7 +40,7 @@ export class XBundle extends Bundle<IXBundleConfig> {
       this.container.set(ROOT_ROUTER, new Router(rootUrl));
     }
 
-    if (this.kernel.isDevelopment()) {
+    if (this.kernel.isDevelopment() && !this.kernel.isTesting()) {
       this.displayWelcomeMessage();
     }
   }
