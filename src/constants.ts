@@ -1,5 +1,8 @@
 import { Token } from "@kaviar/core";
 
+export const MESSENGER = new Token("MESSENGER");
+export const IS_LIVE_DEBUG = new Token("IS_DEBUG");
+export const REDIS_OPTIONS = new Token("REDIS_OPTIONS");
 export const X_SETTINGS = new Token();
 export const APP_ROUTER = new Token();
 export const ROOT_ROUTER = new Token();
@@ -29,3 +32,22 @@ export const RANDOM_GEEKIE_DEV_QUOTES = [
   "%name%, shine on you crazy diamond ✨",
   "All is ✅. It's time to 🎸, %name%!",
 ];
+
+export enum GraphQLSubscriptionEvent {
+  ADDED = "added",
+  CHANGED = "changed",
+  REMOVED = "removed",
+  READY = "ready",
+}
+
+export enum DocumentMutationType {
+  INSERT = "i",
+  UPDATE = "u",
+  REMOVE = "r",
+}
+
+export enum Strategy {
+  DEFAULT = "D",
+  DEDICATED_CHANNELS = "DC",
+  LIMIT_SORT = "LS",
+}

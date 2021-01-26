@@ -14,11 +14,17 @@ import {
   RANDOM_GEEKIE_DEV_QUOTES,
   APP_ROUTER,
   ROOT_ROUTER,
+  IS_LIVE_DEBUG,
+  MESSENGER,
+  REDIS_OPTIONS,
 } from "./constants";
 import { IXBundleConfig } from "./defs";
 import * as chalk from "chalk";
 import { execSync } from "child_process";
 import { Router } from "./services/Router";
+import { RedisMessenger } from "./services/RedisMessenger";
+import { Messenger as LocalMessenger } from "./services/Messenger";
+import SubscriptionGraphQLModule from "./graphql/subscriptions.graphql-module";
 
 export class XBundle extends Bundle<IXBundleConfig> {
   dependencies = [MongoBundle, LoggerBundle];
@@ -27,10 +33,25 @@ export class XBundle extends Bundle<IXBundleConfig> {
     logo: X_WAY,
     appUrl: "http://localhost:3000",
     rootUrl: "http://localhost:4000",
+    live: {
+      debug: false,
+    },
   };
 
   async prepare() {
     this.container.set(X_SETTINGS, this.config);
+
+    const loader = this.container.get(Loader);
+    loader.load(SubscriptionGraphQLModule);
+
+    this.container.set(IS_LIVE_DEBUG, this.config.live.debug || false);
+    if (this.config.live.redis) {
+      this.container.set(REDIS_OPTIONS, this.config.live.redis);
+    }
+    this.container.set({
+      id: MESSENGER,
+      type: this.config.live.redis ? RedisMessenger : LocalMessenger,
+    });
 
     const { appUrl, rootUrl } = this.config;
     if (appUrl) {
