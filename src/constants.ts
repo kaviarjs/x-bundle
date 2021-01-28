@@ -2,11 +2,12 @@ import { Token } from "@kaviar/core";
 import { IMessenger } from "./defs";
 
 export const MESSENGER = new Token<IMessenger>("MESSENGER");
-export const IS_LIVE_DEBUG = new Token("IS_DEBUG");
+export const IS_LIVE_DEBUG = new Token("IS_LIVE_DEBUG");
 export const REDIS_OPTIONS = new Token("REDIS_OPTIONS");
 export const X_SETTINGS = new Token();
 export const APP_ROUTER = new Token();
 export const ROOT_ROUTER = new Token();
+
 export const X_WAY = String.raw`
 ___   ___      ____    __    ____  ___   ____    ____ 
 \  \ /  /      \   \  /  \  /   / /   \  \   \  /   / 

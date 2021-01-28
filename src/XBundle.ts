@@ -25,6 +25,7 @@ import { Router } from "./services/Router";
 import { RedisMessenger } from "./services/RedisMessenger";
 import { Messenger as LocalMessenger } from "./services/Messenger";
 import SubscriptionGraphQLModule from "./graphql/subscriptions.graphql-module";
+import { RedisListener } from "./listeners/RedisListener";
 
 export class XBundle extends Bundle<IXBundleConfig> {
   dependencies = [MongoBundle, LoggerBundle];
@@ -78,6 +79,8 @@ export class XBundle extends Bundle<IXBundleConfig> {
 
     validator.addMethod(UniqueFieldValidationMethod);
     validator.addTransformer(DateTransformer);
+
+    this.warmup([RedisListener]);
 
     loader.load([CRUDTypes, ...scalars]);
   }

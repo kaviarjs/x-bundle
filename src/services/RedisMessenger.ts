@@ -1,10 +1,12 @@
-import { Inject, Service } from "@kaviar/core";
+import { Inject, Service, EventManager } from "@kaviar/core";
 import { IS_LIVE_DEBUG, REDIS_OPTIONS } from "../constants";
 import { ClientOpts, createClient, RedisClient } from "redis";
 import { EJSON } from "@kaviar/ejson";
 import { IMessenger, ISubscriptionEvent, MessageHandleType } from "../defs";
 import { SubscriptionStore } from "./SubscriptionStore";
 import Queue from "queue";
+import { RedisConnectionResumedEvent } from "../events/RedisConnectionResumedEvent";
+import { LoggerService } from "@kaviar/logger-bundle";
 
 @Service()
 export class RedisMessenger implements IMessenger {
@@ -20,7 +22,8 @@ export class RedisMessenger implements IMessenger {
     protected readonly isDebug: boolean,
     @Inject(REDIS_OPTIONS)
     protected readonly options: ClientOpts,
-    protected readonly subscriptionStore: SubscriptionStore
+    protected readonly eventManager: EventManager,
+    protected readonly logger: LoggerService
   ) {
     this.queue = new Queue({
       autostart: true,
@@ -28,6 +31,7 @@ export class RedisMessenger implements IMessenger {
     this.listener = createClient(options);
     this.pusher = createClient(options);
 
+    this.initListener();
     this.attachEventsToListener();
   }
 
@@ -48,14 +52,14 @@ export class RedisMessenger implements IMessenger {
    */
   protected attachEventsToListener() {
     this.listener.on("error", (err) => {
-      console.error(`Redis - An error occured: \n`, JSON.stringify(err));
+      this.logger.error(`Redis - An error occured: \n`, JSON.stringify(err));
     });
     this.listener.on("end", () => {
-      console.error("Redis - Connection to redis ended");
+      this.logger.error("Redis - Connection to redis ended");
     });
     this.listener.on("reconnecting", (err) => {
       if (err) {
-        console.error(
+        this.logger.error(
           "Redis - There was an error when re-connecting to redis",
           JSON.stringify(err)
         );
@@ -63,18 +67,15 @@ export class RedisMessenger implements IMessenger {
     });
     this.listener.on("connect", (err) => {
       if (!err) {
-        console.log("Redis - Established connection to redis.");
+        this.logger.info("Redis - Established connection to redis.");
       } else {
-        console.error(
+        this.logger.error(
           "Redis - There was an error when connecting to redis",
           JSON.stringify(err)
         );
       }
 
-      // On initial connection we should have 0 so it's no problem doing it right now
-      this.subscriptionStore.processors.forEach((processor) => {
-        processor.reload();
-      });
+      this.eventManager.emit(new RedisConnectionResumedEvent());
     });
   }
 

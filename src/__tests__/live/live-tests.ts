@@ -407,8 +407,6 @@ test("Should be able to skip live changes", async (done) => {
   done();
 });
 
-// Ensure multi-update multi-removed are detected properly
-
 test("Ensure multi-update multi-removed are detected properly", async (done) => {
   const postsCollection = container.get(PostsCollection);
   const context = Math.random();

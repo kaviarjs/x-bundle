@@ -15,8 +15,10 @@ export async function createEcosystem(): Promise<ContainerInstance> {
       }),
       new XBundle({
         live: {
+          debug: true,
           redis: {
-            debug: true,
+            host: "127.0.0.1",
+            port: 6379,
           },
         },
       }),
