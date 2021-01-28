@@ -16,10 +16,10 @@ export class RedisMessenger implements IMessenger {
   } = {};
 
   constructor(
-    @Inject(REDIS_OPTIONS)
-    protected readonly options: ClientOpts,
     @Inject(IS_LIVE_DEBUG)
     protected readonly isDebug: boolean,
+    @Inject(REDIS_OPTIONS)
+    protected readonly options: ClientOpts,
     protected readonly subscriptionStore: SubscriptionStore
   ) {
     this.queue = new Queue({

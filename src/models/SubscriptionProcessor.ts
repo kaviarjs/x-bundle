@@ -12,7 +12,7 @@ import { extractIdsFromSelectors } from "../utils/extractIdsFromSelectors";
 import { Strategy, DocumentMutationType } from "../constants";
 import { hasSortFields } from "../utils/hasSortFields";
 import { SubscriptionStore } from "../services/SubscriptionStore";
-import { IParamaterableObject, IQueryBody } from "@kaviar/nova";
+import { ICollectionQueryConfig, QueryBodyType } from "@kaviar/nova";
 import { getFieldsFromQueryBody, getAllowedFields } from "./utils/fields";
 
 export class SubscriptionProcessor<T extends IDocumentBase> {
@@ -36,10 +36,10 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     protected readonly messenger: IMessenger,
     protected readonly isDebug: boolean,
     public readonly collection: Collection<any>,
-    protected readonly body: IQueryBody
+    protected readonly body: QueryBodyType
   ) {
     this.collectionName = collection.collectionName;
-    const { filters, options } = body.$ as IParamaterableObject;
+    const { filters, options } = body.$ as ICollectionQueryConfig;
     this.filters = filters;
     this.options = options;
     this.allowedFields = getFieldsFromQueryBody(body);
@@ -226,7 +226,7 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
   protected getFilteredBody(filters: any) {
     const body = Object.assign({}, this.body);
     body.$ = Object.assign({}, this.body.$);
-    (body.$ as IParamaterableObject).filters = {
+    (body.$ as ICollectionQueryConfig).filters = {
       ...this.filters,
       ...filters,
     };

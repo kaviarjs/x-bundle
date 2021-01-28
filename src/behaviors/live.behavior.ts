@@ -20,7 +20,7 @@ function shouldSkipLive(context) {
 
 const LiveDataInfoTransfer = Symbol("LiveDataInfoTransfer");
 
-export function live(): BehaviorType {
+export function Live(): BehaviorType {
   return (collection: Collection<any>) => {
     collection[LIVE_BEHAVIOR_MARKER] = true;
 

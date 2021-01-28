@@ -1,6 +1,6 @@
-import { IQueryBody } from "@kaviar/nova";
+import { QueryBodyType } from "@kaviar/nova";
 
-export function getFieldsFromQueryBody(body: IQueryBody) {
+export function getFieldsFromQueryBody(body: QueryBodyType) {
   return Object.keys(body).filter((key) => {
     return !["$", "$alias"].includes(key);
   });

@@ -1,8 +1,15 @@
 import { Collection, DocumentNotFoundException } from "@kaviar/mongo-bundle";
 import { getResult } from "@kaviar/graphql-bundle";
-import { IAstToQueryOptions, IParamaterableObject } from "@kaviar/nova";
+import { IAstToQueryOptions } from "@kaviar/nova";
 import { Constructor } from "@kaviar/core";
-import { EJSON } from "@kaviar/ejson";
+import { FilterQuery, UpdateQuery } from "mongodb";
+
+type GraphQLToNovaOptionsResolverType<T> = (
+  _,
+  args,
+  ctx,
+  ast
+) => IAstToQueryOptions<T> | Promise<IAstToQueryOptions<T>>;
 
 const defaultNovaOptionsResolver = async (_, args) => ({
   filters: args.query?.filters || {},
@@ -14,9 +21,9 @@ const defaultNovaOptionsResolver = async (_, args) => ({
  * @param collectionClass
  * @param optionsResolver
  */
-export function ToNova(
-  collectionClass: Constructor<Collection<any>>,
-  optionsResolver?: (_, args, ctx, ast) => Promise<IAstToQueryOptions>
+export function ToNova<T>(
+  collectionClass: Constructor<Collection<T>>,
+  optionsResolver?: GraphQLToNovaOptionsResolverType<T>
 ) {
   if (!optionsResolver) {
     optionsResolver = defaultNovaOptionsResolver;
@@ -31,9 +38,9 @@ export function ToNova(
   };
 }
 
-export function ToNovaOne(
-  collectionClass: Constructor<Collection<any>>,
-  optionsResolver?: (_, args, ctx, ast) => Promise<IAstToQueryOptions>
+export function ToNovaOne<T>(
+  collectionClass: Constructor<Collection<T>>,
+  optionsResolver?: GraphQLToNovaOptionsResolverType<T>
 ) {
   if (!optionsResolver) {
     optionsResolver = defaultNovaOptionsResolver;
@@ -47,9 +54,9 @@ export function ToNovaOne(
   };
 }
 
-export function ToNovaByResultID(
-  collectionClass: Constructor<Collection<any>>,
-  optionsResolver?: (_, args, ctx, ast) => Promise<IAstToQueryOptions>
+export function ToNovaByResultID<T>(
+  collectionClass: Constructor<Collection<T>>,
+  optionsResolver?: GraphQLToNovaOptionsResolverType<T>
 ) {
   if (!optionsResolver) {
     optionsResolver = async (_, args, ctx, ast) => {
@@ -72,12 +79,17 @@ export function ToNovaByResultID(
   };
 }
 
-export function ToCollectionCount(
-  collectionClass: Constructor<Collection<any>>,
-  filterResolver?: (_, args, ctx, ast) => Promise<any>
+export function ToCollectionCount<T>(
+  collectionClass: Constructor<Collection<T>>,
+  filterResolver?: (
+    _,
+    args,
+    ctx,
+    ast
+  ) => FilterQuery<T> | Promise<FilterQuery<T>>
 ) {
   if (!filterResolver) {
-    filterResolver = async (_, args) => args.filters || {};
+    filterResolver = (_, args) => args.filters || {};
   }
 
   return async function (_, args, ctx, ast) {
@@ -88,9 +100,14 @@ export function ToCollectionCount(
   };
 }
 
+/**
+ * This executor will throw an error if the document is not found
+ * @param collectionClass
+ * @param idResolver
+ */
 export function CheckDocumentExists(
   collectionClass: Constructor<Collection<any>>,
-  idResolver?: (args: any) => any
+  idResolver?: (args: any) => any | Promise<any>
 ) {
   if (!idResolver) {
     idResolver = (args) => args._id;
@@ -100,7 +117,7 @@ export function CheckDocumentExists(
     const collection = ctx.container.get(collectionClass);
 
     const document = await collection.findOne(
-      { _id: idResolver(args) },
+      { _id: await idResolver(args) },
       { projection: { _id: 1 } }
     );
 
@@ -127,10 +144,10 @@ export function ToDocumentInsert(
  * @param idArgumentResolver How to get the _id based on the arguments?
  * @param mutateResolver This should return the update query. {$set: something}
  */
-export function ToDocumentUpdateByID(
-  collectionClass: Constructor<Collection<any>>,
-  idArgumentResolver?: (args) => any,
-  mutateResolver?: (args) => any
+export function ToDocumentUpdateByID<T>(
+  collectionClass: Constructor<Collection<T>>,
+  idArgumentResolver?: (args) => any | Promise<any>,
+  mutateResolver?: (args) => UpdateQuery<T> | Promise<UpdateQuery<T>>
 ) {
   if (!idArgumentResolver) {
     idArgumentResolver = (args) => args._id;
@@ -143,9 +160,9 @@ export function ToDocumentUpdateByID(
 
   return async function (_, args, ctx, ast) {
     const collection = ctx.container.get(collectionClass);
-    const _id = idArgumentResolver(args);
+    const _id = await idArgumentResolver(args);
 
-    await collection.updateOne({ _id }, mutateResolver(args));
+    await collection.updateOne({ _id }, await mutateResolver(args));
 
     return _id;
   };
@@ -153,7 +170,7 @@ export function ToDocumentUpdateByID(
 
 export function ToDocumentDeleteByID(
   collectionClass: Constructor<Collection<any>>,
-  idArgumentResolver?: (args) => any
+  idArgumentResolver?: (args) => any | Promise<any>
 ) {
   if (!idArgumentResolver) {
     idArgumentResolver = (args) => args._id;
@@ -161,7 +178,7 @@ export function ToDocumentDeleteByID(
 
   return async function (_, args, ctx, ast) {
     const collection: Collection<any> = ctx.container.get(collectionClass);
-    const _id = idArgumentResolver(args);
+    const _id = await idArgumentResolver(args);
 
     await collection.deleteOne({ _id });
 

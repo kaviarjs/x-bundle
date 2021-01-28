@@ -6,7 +6,7 @@ export * from "./constants";
 export * from "./behaviors";
 export * from "./defs";
 export * from "./constants";
-export * from "./crud/models";
+export * from "./graphql/crud/models";
 export * from "./XBundle";
 export * from "./services/Router";
 export { BaseBundle } from "./models/BaseBundle";

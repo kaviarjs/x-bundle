@@ -1,5 +1,5 @@
-import { live } from "./live.behavior";
+import { Live } from "./live.behavior";
 
 export const Behaviors = {
-  live,
+  Live,
 };

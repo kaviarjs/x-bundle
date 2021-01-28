@@ -8,16 +8,12 @@ import {
   GraphQLSubscriptionEvent,
   IS_LIVE_DEBUG,
 } from "../constants";
-import {
-  ISubscriptionOptions,
-  IMessenger,
-  ISubscriptionEventOptions,
-} from "../defs";
-import { pubsub } from "../graphql/pubsub";
+import { IMessenger, ISubscriptionEventOptions } from "../defs";
 import { SubscriptionHandler } from "../models/SubscriptionHandler";
 import { SubscriptionProcessor } from "../models/SubscriptionProcessor";
 import { LIVE_BEHAVIOR_MARKER } from "../behaviors/live.behavior";
-import { IQueryBody } from "@kaviar/nova";
+import { QueryBodyType } from "@kaviar/nova";
+import { FilterQuery } from "mongodb";
 
 @Service()
 export class SubscriptionStore {
@@ -43,45 +39,81 @@ export class SubscriptionStore {
 
   async createAsyncIterator<T>(
     collection: Collection<T>,
-    subscriptionOptions: ISubscriptionOptions
+    body: QueryBodyType<T>
   ): Promise<AsyncIterator<any>> {
     const channel = uuid();
 
-    const publish = function (event, document?) {
-      pubsub.publish(channel, { document, event });
+    const publish = (event, document?) => {
+      this.pubSub.publish(channel, { document, event });
     };
 
-    const handler = await this.createSubscription(collection, {
-      ...subscriptionOptions,
-      onAdded: (document) => {
-        publish(GraphQLSubscriptionEvent.ADDED, document);
-      },
-      onChanged: (document, changeSet) => {
-        publish(GraphQLSubscriptionEvent.CHANGED, {
-          _id: document._id,
-          ...changeSet,
-        });
-      },
-      onRemoved: (document) => {
-        publish(GraphQLSubscriptionEvent.REMOVED, {
-          _id: document._id,
-        });
-      },
+    return new Promise(async (resolve, reject) => {
+      resolve(this.pubSub.asyncIterator([channel]));
+
+      const handler = await this.createSubscription(collection, body, {
+        onAdded: (document) => {
+          publish(GraphQLSubscriptionEvent.ADDED, document);
+        },
+        onChanged: (document, changeSet) => {
+          publish(GraphQLSubscriptionEvent.CHANGED, {
+            _id: document._id,
+            ...changeSet,
+          });
+        },
+        onRemoved: (document) => {
+          publish(GraphQLSubscriptionEvent.REMOVED, {
+            _id: document._id,
+          });
+        },
+      });
+
+      publish(GraphQLSubscriptionEvent.READY, {});
+
+      this.pubSubChannelStore[channel] = handler;
+      this.handleAsyncIteratorStopping(channel);
     });
+  }
 
-    publish(GraphQLSubscriptionEvent.READY, {});
+  async createAsyncIteratorForCounting<T>(
+    collection: Collection<T>,
+    filters: FilterQuery<T> = {}
+  ): Promise<AsyncIterator<any>> {
+    const channel = uuid();
 
-    this.pubSubChannelStore[channel] = handler;
-    this.handleAsyncIteratorStopping(channel);
+    const publish = (count) => {
+      this.pubSub.publish(channel, { count });
+    };
 
-    // TODO: think whether you need to asyncIterate and return it before beginning the process of subscription
-    // like new Promise, resolve with async iterator, then begin creating the handle and etc
-    return this.pubSub.asyncIterator(channel);
+    return new Promise(async (resolve, reject) => {
+      resolve(this.pubSub.asyncIterator([channel]));
+
+      let ready = false;
+      const handler = await this.createSubscription(
+        collection,
+        {
+          $: { filters },
+          _id: 1,
+        },
+        {
+          onAdded: (document) => {
+            ready && publish(handler.documentStore.length);
+          },
+          onRemoved: (document) => {
+            ready && publish(handler.documentStore.length);
+          },
+        }
+      );
+      ready = true;
+      publish(handler.documentStore.length);
+
+      this.pubSubChannelStore[channel] = handler;
+      this.handleAsyncIteratorStopping(channel);
+    });
   }
 
   async createSubscription<T>(
     collection: Collection<T>,
-    body: IQueryBody,
+    body: QueryBodyType,
     eventOptions?: ISubscriptionEventOptions
   ): Promise<SubscriptionHandler<any>> {
     if (!collection[LIVE_BEHAVIOR_MARKER]) {
@@ -120,9 +152,10 @@ export class SubscriptionStore {
 
   /**
    * This makes sure that later we don't have to deal with existence checks
+   * And make sure we include _id otherwise, we can't know what to update
    * @param body
    */
-  private cleanupBody(body: IQueryBody) {
+  private cleanupBody(body: QueryBodyType) {
     if (!body.$) {
       body.$ = {};
     }
@@ -192,7 +225,7 @@ export class SubscriptionStore {
 
   createProcessor<T>(
     collection: Collection<T>,
-    body: IQueryBody
+    body: QueryBodyType
   ): SubscriptionProcessor<any> {
     const processor = new SubscriptionProcessor(
       this.messenger,
@@ -217,7 +250,7 @@ export class SubscriptionStore {
     );
   }
 
-  static getSubscriptionId(collection: Collection, body: IQueryBody) {
+  static getSubscriptionId(collection: Collection, body: QueryBodyType) {
     // We need to ensure that first level cannot be a function
     return collection.collectionName + ":" + JSON.stringify(body);
   }

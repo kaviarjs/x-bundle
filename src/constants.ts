@@ -1,6 +1,7 @@
 import { Token } from "@kaviar/core";
+import { IMessenger } from "./defs";
 
-export const MESSENGER = new Token("MESSENGER");
+export const MESSENGER = new Token<IMessenger>("MESSENGER");
 export const IS_LIVE_DEBUG = new Token("IS_DEBUG");
 export const REDIS_OPTIONS = new Token("REDIS_OPTIONS");
 export const X_SETTINGS = new Token();

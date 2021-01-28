@@ -1,5 +1,7 @@
+import { ContainerInstance } from "@kaviar/core";
 import { ClientOpts } from "redis";
 import { DocumentMutationType } from "./constants";
+import { SubscriptionHandler } from "./models/SubscriptionHandler";
 export interface IXBundleConfig {
   /**
    * Application URL is useful as XBundle can be used to route to different part of your web/front-end application
@@ -32,11 +34,6 @@ export interface ISubscriptionEvent<T = any> {
   mutationType: DocumentMutationType;
   documentId: any;
   modifiedFields?: string[];
-}
-
-export interface ISubscriptionOptions {
-  filters?: any;
-  options?: any;
 }
 
 export interface ISubscriptionEventOptions {
@@ -74,4 +71,10 @@ export interface ISubscriptionHandler<T> {
   onRemoved(handler: OnDocumentRemovedHandler);
   onStop(handler: Function);
   stop(): Promise<void>;
+}
+
+declare module "@kaviar/graphql-bundle" {
+  export interface IGraphQLContext {
+    container: ContainerInstance;
+  }
 }

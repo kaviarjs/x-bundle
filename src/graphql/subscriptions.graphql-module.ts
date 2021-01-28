@@ -5,6 +5,10 @@ export default {
       document: EJSON
     }
 
+    type SubscriptionCountEvent {
+      count: Int
+    }
+
     enum SubscriptionEventType {
       added
       changed
@@ -14,10 +18,10 @@ export default {
   `,
   resolvers: {
     SubscriptionEventType: {
-      added: () => "added",
-      changed: () => "changed",
-      removed: () => "removed",
-      ready: () => "ready",
+      added: "added",
+      changed: "changed",
+      removed: "removed",
+      ready: "ready",
     },
   },
 };

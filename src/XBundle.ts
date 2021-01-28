@@ -6,8 +6,8 @@ import { Loader } from "@kaviar/graphql-bundle";
 
 import { UniqueFieldValidationMethod } from "./validators/UniqueFieldValidationMethod";
 import { DateTransformer } from "./validators/DateTransformer";
-import CRUDTypes from "./crud/types";
-import scalars from "./scalars";
+import CRUDTypes from "./graphql/crud/types";
+import scalars from "./graphql/scalars";
 import {
   X_SETTINGS,
   X_WAY,
@@ -48,9 +48,15 @@ export class XBundle extends Bundle<IXBundleConfig> {
     if (this.config.live.redis) {
       this.container.set(REDIS_OPTIONS, this.config.live.redis);
     }
+
+    // We leave it here as any due to constructor incompatibility in this.container.set()
+    const messengerType: any = this.config.live.redis
+      ? RedisMessenger
+      : LocalMessenger;
+
     this.container.set({
       id: MESSENGER,
-      type: this.config.live.redis ? RedisMessenger : LocalMessenger,
+      type: messengerType,
     });
 
     const { appUrl, rootUrl } = this.config;
