@@ -1,6 +1,10 @@
-import { Bundle as CoreBundle } from "@kaviar/core";
+import {
+  Bundle as CoreBundle,
+  BundleAfterInitEvent,
+  EventManager,
+} from "@kaviar/core";
 import { Loader } from "@kaviar/graphql-bundle";
-import { Collection } from "@kaviar/mongo-bundle";
+import { Collection, MongoBundle } from "@kaviar/mongo-bundle";
 import { ValidatorService } from "@kaviar/validator-bundle";
 
 export abstract class BaseBundle<T = any> extends CoreBundle<T> {
@@ -10,7 +14,7 @@ export abstract class BaseBundle<T = any> extends CoreBundle<T> {
     serverRoutes?: Record<string, any>;
     validators?: Record<string, any>;
     fixtures?: Record<string, any>;
-    graphqlModule?: any;
+    graphqlModule?: any | any[];
   }) {
     const {
       collections,
@@ -22,11 +26,16 @@ export abstract class BaseBundle<T = any> extends CoreBundle<T> {
 
     // Warming up forces instantiation and initialisastion of classes
     if (collections) {
-      this.warmup(
-        Object.values(collections).filter(
-          (v) => Boolean(v) && v instanceof Collection
-        )
-      );
+      const eventManager = this.container.get(EventManager);
+      eventManager.addListener(BundleAfterInitEvent, (e) => {
+        if (e.data.bundle instanceof MongoBundle) {
+          this.warmup(
+            Object.values(collections).filter(
+              (v) => Boolean(v) && v instanceof Collection
+            )
+          );
+        }
+      });
     }
 
     if (listeners) {
