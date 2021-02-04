@@ -401,7 +401,7 @@ With LiveData you can subscribe and receive notifications when things change in 
 
 ### Behaviors
 
-So, collections need to emit messages when a mutation (insert/update/remove) happens in the system. We do this by attaching a behavior to it.
+Collections need to emit messages when a mutation (insert/update/remove) happens in the system. We do this by attaching a behavior to it.
 
 ```ts
 import { Behaviors } from "@kaviar/x-bundle";
