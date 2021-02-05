@@ -70,7 +70,7 @@ export class SubscriptionStore {
       publish(GraphQLSubscriptionEvent.READY, {});
 
       this.pubSubChannelStore[channel] = handler;
-      this.handleAsyncIteratorStopping(channel);
+      this.handleAsyncIteratorStopping(channel, handler);
     });
   }
 
@@ -107,7 +107,7 @@ export class SubscriptionStore {
       publish(handler.documentStore.length);
 
       this.pubSubChannelStore[channel] = handler;
-      this.handleAsyncIteratorStopping(channel);
+      this.handleAsyncIteratorStopping(channel, handler);
     });
   }
 
@@ -121,14 +121,19 @@ export class SubscriptionStore {
         `This collection: "${collection.collectionName}" does not have the live behavior attached. Reactivity may not work as expected.`
       );
     }
+    if (!body) {
+      body = {};
+    }
     this.cleanupBody(body);
 
     const id = SubscriptionStore.getSubscriptionId(collection, body);
     // first we find if there's a processor for this id
 
-    let foundProcessor = this.processors.find(
-      (processor) => processor.id == id
-    );
+    let foundProcessor = null;
+    // TODO: must fix this, as this gives a weird error when using multiple subscriptions on GraphQL
+    // let foundProcessor = this.processors.find(
+    //   (processor) => processor.id == id
+    // );
 
     // if it doesn't exist, we create the processor
     if (!foundProcessor) {
@@ -175,7 +180,10 @@ export class SubscriptionStore {
    * This creates the handle of removing
    * @param channel
    */
-  protected handleAsyncIteratorStopping(channel) {
+  protected handleAsyncIteratorStopping(
+    channel,
+    handler: SubscriptionHandler<any>
+  ) {
     const stopObserver = (_channel) => {
       if (_channel === channel) {
         if (this.pubSubChannelStore[channel]) {
@@ -184,6 +192,7 @@ export class SubscriptionStore {
         }
 
         this.pubSubEventEmitter.removeListener("removeListener", stopObserver);
+        this.stopHandle(handler);
       }
     };
 
