@@ -1,4 +1,4 @@
-<h1 align="center">KAVIAR X-WAY BUNDLE</h1>
+<h1 align="center">KAVIAR X BUNDLE</h1>
 
 <p align="center">
   <a href="https://travis-ci.org/kaviarjs/x-bundle">
