@@ -44,33 +44,45 @@ export class SubscriptionStore {
     const channel = uuid();
 
     const publish = (event, document?) => {
+      this.isDebug &&
+        console.log(
+          `[publish] channel: "${channel}", event: "${event}"`,
+          document ?? null
+        );
       this.pubSub.publish(channel, { document, event });
     };
 
     return new Promise(async (resolve, reject) => {
       resolve(this.pubSub.asyncIterator([channel]));
 
-      const handler = await this.createSubscription(collection, body, {
-        onAdded: (document) => {
-          publish(GraphQLSubscriptionEvent.ADDED, document);
-        },
-        onChanged: (document, changeSet) => {
-          publish(GraphQLSubscriptionEvent.CHANGED, {
-            _id: document._id,
-            ...changeSet,
-          });
-        },
-        onRemoved: (document) => {
-          publish(GraphQLSubscriptionEvent.REMOVED, {
-            _id: document._id,
-          });
-        },
+      // We have to wait on the resolve to execute
+      // Because if this happens too fast
+      process.nextTick(async () => {
+        const handler = await this.createSubscription(collection, body, {
+          onAdded: (document) => {
+            publish(GraphQLSubscriptionEvent.ADDED, document);
+          },
+          onChanged: (document, changeSet) => {
+            publish(GraphQLSubscriptionEvent.CHANGED, {
+              _id: document._id,
+              ...changeSet,
+            });
+          },
+          onRemoved: (document) => {
+            publish(GraphQLSubscriptionEvent.REMOVED, {
+              _id: document._id,
+            });
+          },
+        });
+
+        publish(GraphQLSubscriptionEvent.READY, {});
+
+        this.pubSubChannelStore[channel] = handler;
+        this.handleAsyncIteratorStopping(channel, handler);
+
+        this.isDebug &&
+          console.log(`[publish] async iterator ready for channel ${channel}`);
       });
-
-      publish(GraphQLSubscriptionEvent.READY, {});
-
-      this.pubSubChannelStore[channel] = handler;
-      this.handleAsyncIteratorStopping(channel, handler);
     });
   }
 
@@ -129,11 +141,11 @@ export class SubscriptionStore {
     const id = SubscriptionStore.getSubscriptionId(collection, body);
     // first we find if there's a processor for this id
 
-    let foundProcessor = null;
+    // let foundProcessor = null;
     // TODO: must fix this, as this gives a weird error when using multiple subscriptions on GraphQL
-    // let foundProcessor = this.processors.find(
-    //   (processor) => processor.id == id
-    // );
+    let foundProcessor = this.processors.find(
+      (processor) => processor.id == id
+    );
 
     // if it doesn't exist, we create the processor
     if (!foundProcessor) {
@@ -226,6 +238,7 @@ export class SubscriptionStore {
    * @param handle
    */
   stopHandle(handle: SubscriptionHandler<any>) {
+    this.isDebug && console.log(`[handles] Stopping a handle from a processor`);
     handle.processor.detachHandler(handle);
     if (!handle.processor.hasHandlers()) {
       this.stopProcessor(handle.processor);
@@ -243,9 +256,7 @@ export class SubscriptionStore {
       body
     );
     this.isDebug &&
-      console.log(
-        `[${collection.collectionName}] Created subscription with id: ${processor.id}`
-      );
+      console.log(`[processors] Created subscription with id: ${processor.id}`);
 
     this.processors.push(processor);
 
@@ -253,6 +264,10 @@ export class SubscriptionStore {
   }
 
   stopProcessor(processor: SubscriptionProcessor<any>) {
+    this.isDebug &&
+      console.log(
+        `[processors] Destroying subscription with id: ${processor.id}`
+      );
     processor.stop();
     this.processors = this.processors.filter(
       (_processor) => processor !== _processor
