@@ -2,10 +2,14 @@ import { Constructor } from "@kaviar/core";
 import { Collection } from "@kaviar/mongo-bundle";
 import { SubscriptionStore } from "../services/SubscriptionStore";
 import { IGraphQLContext } from "@kaviar/graphql-bundle";
+import { QueryBodyType } from "@kaviar/nova";
+import { FilterQuery } from "mongodb";
+
+type ResolverType<T> = (_, args, ctx: IGraphQLContext, ast) => T | Promise<T>;
 
 export function ToSubscription<T>(
   collectionClass: Constructor<Collection<T>>,
-  bodyResolver
+  bodyResolver?: ResolverType<QueryBodyType<T>>
 ) {
   if (!bodyResolver) {
     bodyResolver = async (_, args, ctx: IGraphQLContext, ast) => args.body;
@@ -22,7 +26,7 @@ export function ToSubscription<T>(
 
 export function ToSubscriptionCount<T>(
   collectionClass: Constructor<Collection<T>>,
-  filtersResolver
+  filtersResolver?: ResolverType<FilterQuery<T>>
 ) {
   if (!filtersResolver) {
     filtersResolver = async (_, args, ctx: IGraphQLContext, ast) =>
