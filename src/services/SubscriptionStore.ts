@@ -129,11 +129,11 @@ export class SubscriptionStore {
     const id = SubscriptionStore.getSubscriptionId(collection, body);
     // first we find if there's a processor for this id
 
-    let foundProcessor = null;
+    // let foundProcessor = null;
     // TODO: must fix this, as this gives a weird error when using multiple subscriptions on GraphQL
-    // let foundProcessor = this.processors.find(
-    //   (processor) => processor.id == id
-    // );
+    let foundProcessor = this.processors.find(
+      (processor) => processor.id == id
+    );
 
     // if it doesn't exist, we create the processor
     if (!foundProcessor) {

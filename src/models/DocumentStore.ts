@@ -26,7 +26,7 @@ export class DocumentStore<T extends IDocumentBase> {
 
   remove(_id) {
     this.documents = this.documents.filter((document) => {
-      document._id !== _id;
+      return !this.equals(document._id, _id);
     });
   }
 
@@ -45,7 +45,7 @@ export class DocumentStore<T extends IDocumentBase> {
   }
 
   static equals(_id1, _id2) {
-    if (typeof _id1 === "object") {
+    if (typeof _id1 === "object" || typeof _id2 === "object") {
       return _id1.toString() === _id2.toString();
     } else {
       return _id1 === _id2;

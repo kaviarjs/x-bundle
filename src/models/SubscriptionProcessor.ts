@@ -96,6 +96,7 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
         `[${this.collectionName}] Adding a new document: \n`,
         document
       );
+
     this.documentStore.add(document);
     for (const handler of this.handlers) {
       for (const callback of handler.addedCallbacks) {
@@ -128,7 +129,7 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
 
   async remove(documentId) {
     this.isDebug &&
-      console.log(`[${this.collectionName}] Removed document ${documentId}`);
+      console.log(`[${this.collectionName}] Removing document ${documentId}`);
 
     const document = this.documentStore.get(documentId);
     this.documentStore.remove(documentId);

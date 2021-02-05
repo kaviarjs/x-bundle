@@ -50,6 +50,7 @@ export class Messenger implements IMessenger {
     this.queue.push(async () => {
       for (const channel of channels) {
         if (this.channelMap[channel]) {
+          this.isDebug && console.log(`Publishing to ${channel}`, data);
           for (const handler of this.channelMap[channel]) {
             await handler(data);
           }
