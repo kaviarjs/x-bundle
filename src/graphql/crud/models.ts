@@ -1,3 +1,5 @@
+import { QueryBodyType } from "@kaviar/nova";
+
 export class QueryInput {
   filters: {
     [key: string]: any;
@@ -6,11 +8,12 @@ export class QueryInput {
 }
 
 export class QueryOptionsInput {
-  sort: {
-    [key: string]: any;
+  sort?: {
+    [key: string]: 1 | -1;
   };
-  limit: number;
-  skip: number;
+  limit?: number;
+  skip?: number;
+  sideBody?: QueryBodyType;
 }
 
 export class DocumentUpdateInput {

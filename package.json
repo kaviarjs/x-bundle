@@ -41,7 +41,7 @@
     "graphql": "^15.3.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@kaviar/apollo-bundle": "^1.1.0",
+    "@kaviar/apollo-bundle": "^1.1.3",
     "@kaviar/core": "^1.1.1",
     "@kaviar/email-bundle": "^1.0.0",
     "@kaviar/graphql-bundle": "^1.0.0",

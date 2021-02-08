@@ -11,10 +11,23 @@ type GraphQLToNovaOptionsResolverType<T> = (
   ast
 ) => IAstToQueryOptions<T> | Promise<IAstToQueryOptions<T>>;
 
-const defaultNovaOptionsResolver = async (_, args) => ({
-  filters: args.query?.filters || {},
-  options: args.query?.options || {},
-});
+const defaultNovaOptionsResolver: GraphQLToNovaOptionsResolverType<any> = async (
+  _,
+  args
+) => {
+  const { query } = args;
+  if (!query) {
+    return {};
+  }
+
+  const { sideBody, ...cleanedOptions } = query.options || {};
+
+  return {
+    filters: query.filters || {},
+    options: cleanedOptions,
+    sideBody: sideBody || {},
+  };
+};
 
 /**
  * If your input is of "QueryInput" it will automatically apply the filters and options

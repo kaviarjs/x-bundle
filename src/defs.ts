@@ -1,4 +1,5 @@
 import { ContainerInstance } from "@kaviar/core";
+import { IAstToQueryOptions } from "@kaviar/nova";
 import { ClientOpts } from "redis";
 import { DocumentMutationType } from "./constants";
 import { SubscriptionHandler } from "./models/SubscriptionHandler";
