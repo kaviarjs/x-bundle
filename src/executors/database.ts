@@ -1,8 +1,10 @@
 import { Collection, DocumentNotFoundException } from "@kaviar/mongo-bundle";
 import { getResult } from "@kaviar/graphql-bundle";
 import { IAstToQueryOptions } from "@kaviar/nova";
-import { Constructor } from "@kaviar/core";
+import { Constructor, ContainerInstance } from "@kaviar/core";
 import { FilterQuery, UpdateQuery } from "mongodb";
+import { detectPipelineInSideBody } from "./utils/detectPipelineInSideBody";
+import { performRelationalSorting } from "./utils/performRelatinalSorting";
 
 type GraphQLToNovaOptionsResolverType<T> = (
   _,
@@ -11,21 +13,47 @@ type GraphQLToNovaOptionsResolverType<T> = (
   ast
 ) => IAstToQueryOptions<T> | Promise<IAstToQueryOptions<T>>;
 
+const prepareForExecution = (
+  collectionClass,
+  astToQueryOptions: IAstToQueryOptions,
+  container: ContainerInstance
+): void => {
+  let { sideBody, ...cleanedOptions } = astToQueryOptions.options || {};
+  if (!sideBody) {
+    sideBody = {};
+    astToQueryOptions.sideBody = sideBody;
+  } else {
+    // This ensures we don't have any pipeline
+    detectPipelineInSideBody(sideBody);
+  }
+
+  if (!sideBody.$) {
+    sideBody.$ = {};
+  }
+
+  // The sort from options takes owning
+  const sort = cleanedOptions?.sort || sideBody.$.options?.sort;
+
+  if (sort && Object.keys(sort).length > 0) {
+    const pipeline = performRelationalSorting(container, collectionClass, sort);
+    if (pipeline.length) {
+      if (sideBody.$.pipeline) {
+        sideBody.$.pipeline.push(...pipeline);
+      } else {
+        sideBody.$.pipeline = pipeline;
+      }
+    }
+  }
+};
+
 const defaultNovaOptionsResolver: GraphQLToNovaOptionsResolverType<any> = async (
   _,
   args
 ) => {
   const { query } = args;
-  if (!query) {
-    return {};
-  }
-
-  const { sideBody, ...cleanedOptions } = query.options || {};
-
   return {
     filters: query.filters || {},
-    options: cleanedOptions,
-    sideBody: sideBody || {},
+    options: query.options || {},
   };
 };
 
@@ -44,6 +72,7 @@ export function ToNova<T>(
 
   return async function (_, args, ctx, ast) {
     const options = await optionsResolver(_, args, ctx, ast);
+    prepareForExecution(collectionClass, options, ctx.container);
 
     const collection = ctx.container.get(collectionClass);
 
@@ -61,6 +90,8 @@ export function ToNovaOne<T>(
 
   return async function (_, args, ctx, ast) {
     const options = await optionsResolver(_, args, ctx, ast);
+    prepareForExecution(collectionClass, options, ctx.container);
+
     const collection = ctx.container.get(collectionClass);
 
     return collection.queryOneGraphQL(ast, options);
@@ -84,11 +115,11 @@ export function ToNovaByResultID<T>(
   }
   return async function (_, args, ctx, ast) {
     const collection = ctx.container.get(collectionClass);
+    const options = await optionsResolver(_, args, ctx, ast);
 
-    return collection.queryOneGraphQL(
-      ast,
-      await optionsResolver(_, args, ctx, ast)
-    );
+    prepareForExecution(collectionClass, options, ctx.container);
+
+    return collection.queryOneGraphQL(ast, options);
   };
 }
 
