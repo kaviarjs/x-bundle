@@ -52,8 +52,8 @@ const defaultNovaOptionsResolver: GraphQLToNovaOptionsResolverType<any> = async 
 ) => {
   const { query } = args;
   return {
-    filters: query.filters || {},
-    options: query.options || {},
+    filters: query?.filters || {},
+    options: query?.options || {},
   };
 };
 
