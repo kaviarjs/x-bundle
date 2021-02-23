@@ -1,7 +1,8 @@
-import { On, Listener, Inject } from "@kaviar/core";
+import { On, Listener, Inject, Service } from "@kaviar/core";
 import { RedisConnectionResumedEvent } from "../events/RedisConnectionResumedEvent";
 import { SubscriptionStore } from "../services/SubscriptionStore";
 
+@Service()
 export class RedisListener extends Listener {
   @Inject()
   protected subscriptionStore: SubscriptionStore;

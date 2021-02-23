@@ -1,6 +1,6 @@
 import { yup, IValidationMethod } from "@kaviar/validator-bundle";
 import { Collection } from "@kaviar/mongo-bundle";
-import { ContainerInstance, Constructor } from "@kaviar/core";
+import { ContainerInstance, Constructor, Service } from "@kaviar/core";
 
 export interface IUniqueFieldValidationConfig {
   message?: string;
@@ -8,6 +8,7 @@ export interface IUniqueFieldValidationConfig {
   collection: Constructor<Collection<any>>;
 }
 
+@Service()
 export class UniqueFieldValidationMethod
   implements IValidationMethod<IUniqueFieldValidationConfig> {
   parent = yup.mixed; // optional, defaults to yup.mixed, so to all

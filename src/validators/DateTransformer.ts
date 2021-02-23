@@ -1,8 +1,10 @@
+import { Service } from "@kaviar/core";
 import { yup, IValidationTransformer } from "@kaviar/validator-bundle";
 import { parse } from "date-fns";
 
 type IDateTransformerConfig = string;
 
+@Service()
 export class DateTransformer
   implements IValidationTransformer<IDateTransformerConfig, Date> {
   parent = yup.date;

@@ -11,7 +11,18 @@ export default {
         return new Date(value); // value from the client
       },
       serialize(value) {
-        return value.getTime(); // value sent to the client
+        if (!value) {
+          return null;
+        }
+
+        if (value instanceof Date) {
+          return value.getTime();
+        }
+        if (typeof value === "string") {
+          return new Date(value).getTime();
+        }
+
+        return value; // value sent to the client
       },
       parseLiteral(ast) {
         if (ast.kind === Kind.INT) {

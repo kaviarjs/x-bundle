@@ -133,7 +133,13 @@ export function ToCollectionCount<T>(
   ) => FilterQuery<T> | Promise<FilterQuery<T>>
 ) {
   if (!filterResolver) {
-    filterResolver = (_, args) => args.filters || {};
+    filterResolver = (_, args) => {
+      if (args.filters) {
+        return args.filters;
+      }
+
+      return args.query?.filters || {};
+    };
   }
 
   return async function (_, args, ctx, ast) {
