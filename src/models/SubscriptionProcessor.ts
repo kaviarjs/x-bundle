@@ -4,7 +4,7 @@
 // When processor doesn't have a handle anymore, it should die.
 
 import { Collection } from "@kaviar/mongo-bundle";
-import { IDocumentBase, ISubscriptionEvent } from "../defs";
+import { IChangeSet, IDocumentBase, ISubscriptionEvent } from "../defs";
 import { DocumentStore } from "./DocumentStore";
 import { IMessenger } from "../defs";
 import { SubscriptionHandler } from "./SubscriptionHandler";
@@ -14,6 +14,7 @@ import { hasSortFields } from "../utils/hasSortFields";
 import { SubscriptionStore } from "../services/SubscriptionStore";
 import { ICollectionQueryConfig, QueryBodyType } from "@kaviar/nova";
 import { getFieldsFromQueryBody, getAllowedFields } from "./utils/fields";
+import { getChangedSet } from "./utils/getChangedSet";
 
 export class SubscriptionProcessor<T extends IDocumentBase> {
   protected collectionName: string;
@@ -114,20 +115,26 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     if (set === null) {
       return;
     }
+    const oldDocument = Object.assign({}, this.documentStore.get(documentId));
+    const optimalChangeSet = getChangedSet(oldDocument, set) as IChangeSet<T>;
+
+    if (Object.keys(optimalChangeSet).length === 0) {
+      // No change detected.
+      return;
+    }
 
     this.isDebug &&
       console.log(
         `[${this.collectionName}] Updating document ${documentId} with: \n`,
-        set
+        optimalChangeSet
       );
-    const oldDocument = Object.assign({}, this.documentStore.get(documentId));
 
-    this.documentStore.update(documentId, set);
+    this.documentStore.update(documentId, optimalChangeSet);
     const document = this.documentStore.get(documentId);
 
     for (const handler of this.handlers) {
       for (const callback of handler.changedCallbacks) {
-        callback(document, set, oldDocument);
+        callback(document, optimalChangeSet, oldDocument);
       }
     }
   }
@@ -204,6 +211,14 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
   ): Promise<null | Partial<T>> {
     const options: any = {};
     const filters = { _id: event.documentId };
+
+    return this.collection.queryOne(this.getFilteredBody(filters));
+
+    // TODO:
+    // Optimise the solution in the following ways:
+    // 1. Only send the changeset down the pipeline
+    // 2. Only fetch related data through nova, if body contains a reducer or a link, then you fetch the right fields and nested data
+    // as it most likely has been updated.
 
     if (withSpecificFields.length > 0) {
       const filteredFields = getAllowedFields(
