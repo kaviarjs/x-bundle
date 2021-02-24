@@ -255,8 +255,6 @@ export class SubscriptionStore {
       collection,
       body
     );
-    this.isDebug &&
-      console.log(`[processors] Created subscription with id: ${processor.id}`);
 
     this.processors.push(processor);
 

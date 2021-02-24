@@ -50,6 +50,11 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     if (Object.keys(filters).length === 0) {
       this.filtersAreEmpty = true;
     }
+
+    this.isDebug &&
+      console.log(
+        `[processors] Created new processor with strategy: "${this.strategy}" and id: "${this.id}"`
+      );
   }
 
   async start(): Promise<void> {
@@ -327,6 +332,7 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
             await this.getDocumentForStore(event, event.modifiedFields)
           );
         }
+        break;
       case DocumentMutationType.REMOVE:
         if (this.documentStore.contains(event.documentId)) {
           this.remove(event.documentId);
