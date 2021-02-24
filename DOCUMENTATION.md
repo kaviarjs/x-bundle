@@ -525,7 +525,7 @@ You also have the ability to have a counter subscription:
 
 ```graphql
 type Subscription {
-  users(body: EJSON): SubscriptionCountEvent
+  usersCount(body: EJSON): SubscriptionCountEvent
 }
 ```
 
