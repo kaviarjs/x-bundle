@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "@kaviar/core": "^1.1.1",
-    "@kaviar/nova": "^1.3.2",
+    "@kaviar/nova": "^1.4.1",
     "@kaviar/mongo-bundle": "^1.0.0",
     "@kaviar/validator-bundle": "^1.0.0",
     "@kaviar/security-bundle": "^1.0.0",
@@ -47,7 +47,7 @@
     "@kaviar/graphql-bundle": "^1.0.0",
     "@kaviar/logger-bundle": "^1.0.0",
     "@kaviar/mongo-bundle": "^1.0.0",
-    "@kaviar/nova": "^1.3.2",
+    "@kaviar/nova": "^1.4.1",
     "@kaviar/security-bundle": "^1.0.0",
     "@kaviar/validator-bundle": "^1.0.0",
     "@types/chai": "^4.2.3",
