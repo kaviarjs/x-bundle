@@ -4,12 +4,14 @@ import { SubscriptionStore } from "../services/SubscriptionStore";
 import { IGraphQLContext } from "@kaviar/graphql-bundle";
 import { QueryBodyType } from "@kaviar/nova";
 import { FilterQuery } from "mongodb";
+import { SubscriptionProcessorOptionsType } from "../models/SubscriptionProcessor";
 
 type ResolverType<T> = (_, args, ctx: IGraphQLContext, ast) => T | Promise<T>;
 
 export function ToSubscription<T>(
   collectionClass: Constructor<Collection<T>>,
-  bodyResolver?: ResolverType<QueryBodyType<T>>
+  bodyResolver?: ResolverType<QueryBodyType<T>> | null,
+  subscriptionOptionsResolver?: ResolverType<SubscriptionProcessorOptionsType>
 ) {
   if (!bodyResolver) {
     bodyResolver = async (_, args, ctx: IGraphQLContext, ast) => args.body;
@@ -20,13 +22,20 @@ export function ToSubscription<T>(
     const subscriptionStore = container.get(SubscriptionStore);
     const body = await bodyResolver(_, args, ctx, ast);
 
-    return subscriptionStore.createAsyncIterator(collection, body);
+    return subscriptionStore.createAsyncIterator(
+      collection,
+      body,
+      subscriptionOptionsResolver
+        ? await subscriptionOptionsResolver(_, args, ctx, ast)
+        : {}
+    );
   };
 }
 
 export function ToSubscriptionCount<T>(
   collectionClass: Constructor<Collection<T>>,
-  filtersResolver?: ResolverType<FilterQuery<T>>
+  filtersResolver?: ResolverType<FilterQuery<T>> | null,
+  subscriptionOptionsResolver?: ResolverType<SubscriptionProcessorOptionsType>
 ) {
   if (!filtersResolver) {
     filtersResolver = async (_, args, ctx: IGraphQLContext, ast) =>
@@ -40,7 +49,10 @@ export function ToSubscriptionCount<T>(
 
     return subscriptionStore.createAsyncIteratorForCounting(
       collection,
-      filters
+      filters,
+      subscriptionOptionsResolver
+        ? await subscriptionOptionsResolver(_, args, ctx, ast)
+        : {}
     );
   };
 }

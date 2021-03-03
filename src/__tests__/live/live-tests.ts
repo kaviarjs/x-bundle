@@ -399,7 +399,9 @@ test("Should be able to skip live changes", async (done) => {
     },
     {
       context: {
-        disableLiveChanges: true,
+        live: {
+          disable: true,
+        },
       },
     }
   );

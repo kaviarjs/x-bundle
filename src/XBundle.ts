@@ -1,4 +1,4 @@
-import { Bundle, MissingParameterException } from "@kaviar/core";
+import { Bundle, Constructor, MissingParameterException } from "@kaviar/core";
 import { ValidatorService } from "@kaviar/validator-bundle";
 import { MongoBundle } from "@kaviar/mongo-bundle";
 import { LoggerBundle } from "@kaviar/logger-bundle";
@@ -18,7 +18,7 @@ import {
   MESSENGER,
   REDIS_OPTIONS,
 } from "./constants";
-import { IXBundleConfig } from "./defs";
+import { IXBundleConfig, IMessenger } from "./defs";
 import * as chalk from "chalk";
 import { execSync } from "child_process";
 import { Router } from "./services/Router";
@@ -50,10 +50,13 @@ export class XBundle extends Bundle<IXBundleConfig> {
       this.container.set(REDIS_OPTIONS, this.config.live.redis);
     }
 
-    // We leave it here as any due to constructor incompatibility in this.container.set()
-    const messengerType: any = this.config.live.redis
-      ? RedisMessenger
-      : LocalMessenger;
+    let messengerType: Constructor<IMessenger>;
+    if (this.config.live.messengerClass) {
+      messengerType = this.config.live.messengerClass;
+    } else {
+      // We leave it here as any due to constructor incompatibility in this.container.set()
+      messengerType = this.config.live.redis ? RedisMessenger : LocalMessenger;
+    }
 
     this.container.set({
       id: MESSENGER,

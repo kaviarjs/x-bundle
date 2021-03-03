@@ -37,7 +37,8 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     protected readonly messenger: IMessenger,
     protected readonly isDebug: boolean,
     public readonly collection: Collection<any>,
-    protected readonly body: QueryBodyType
+    protected readonly body: QueryBodyType,
+    protected readonly subscriptionOptions: SubscriptionProcessorOptionsType = {}
   ) {
     this.collectionName = collection.collectionName;
     const { filters, options } = body.$ as ICollectionQueryConfig;
@@ -47,7 +48,8 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     this.strategy = this.getStrategy(filters, options);
     this.id = SubscriptionStore.getSubscriptionId(collection, body);
 
-    this.channels = this.getSubscriptionChannels(filters);
+    this.channels =
+      subscriptionOptions.channels || this.getSubscriptionChannels(filters);
     if (Object.keys(filters).length === 0) {
       this.filtersAreEmpty = true;
     }
@@ -455,3 +457,7 @@ export class SubscriptionProcessor<T extends IDocumentBase> {
     }
   }
 }
+
+export type SubscriptionProcessorOptionsType = {
+  channels?: string[];
+};

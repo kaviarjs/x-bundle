@@ -10,12 +10,10 @@ import {
 import { DocumentMutationType, MESSENGER } from "../constants";
 import { IMessenger } from "../defs";
 import { getFields } from "../utils/getFields";
-
 export const LIVE_BEHAVIOR_MARKER = Symbol("HasLiveBehavior");
-export const SKIP_LIVE = "disableLiveChanges";
 
 function shouldSkipLive(context) {
-  return context ? context[SKIP_LIVE] : false;
+  return context ? context.live?.disable === true : false;
 }
 
 const LiveDataInfoTransfer = Symbol("LiveDataInfoTransfer");
@@ -33,6 +31,7 @@ export function Live(): BehaviorType {
         }
 
         const channels = [
+          ...(e.data.context.live?.channels || []),
           collection.collectionName,
           `${collection.collectionName}::${e.data._id}`,
         ];
@@ -79,7 +78,11 @@ export function Live(): BehaviorType {
 
         updatedIds.forEach((_id) => {
           messenger.publish(
-            [collection.collectionName, `${collection.collectionName}::${_id}`],
+            [
+              ...(e.data.context.live?.channels || []),
+              collection.collectionName,
+              `${collection.collectionName}::${_id}`,
+            ],
             {
               documentId: _id,
               modifiedFields: modifiedFields.topLevelFields,
@@ -126,7 +129,11 @@ export function Live(): BehaviorType {
 
         updatedIds.forEach((_id) => {
           messenger.publish(
-            [collection.collectionName, `${collection.collectionName}::${_id}`],
+            [
+              ...(e.data.context.live?.channels || []),
+              collection.collectionName,
+              `${collection.collectionName}::${_id}`,
+            ],
             {
               documentId: _id,
               mutationType: DocumentMutationType.REMOVE,

@@ -1,4 +1,4 @@
-import { ContainerInstance } from "@kaviar/core";
+import { Constructor, ContainerInstance } from "@kaviar/core";
 import { IAstToQueryOptions } from "@kaviar/nova";
 import { ClientOpts } from "redis";
 import { DocumentMutationType } from "./constants";
@@ -20,6 +20,7 @@ export interface IXBundleConfig {
   live: {
     redis?: ClientOpts;
     debug?: boolean;
+    messengerClass?: Constructor<IMessenger>;
   };
 }
 

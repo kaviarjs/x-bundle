@@ -12,7 +12,10 @@ import {
 } from "../constants";
 import { IMessenger, ISubscriptionEventOptions } from "../defs";
 import { SubscriptionHandler } from "../models/SubscriptionHandler";
-import { SubscriptionProcessor } from "../models/SubscriptionProcessor";
+import {
+  SubscriptionProcessor,
+  SubscriptionProcessorOptionsType,
+} from "../models/SubscriptionProcessor";
 import { LIVE_BEHAVIOR_MARKER } from "../behaviors/live.behavior";
 
 @Service()
@@ -37,9 +40,15 @@ export class SubscriptionStore {
     });
   }
 
+  /**
+   * This is designed to customly work with GraphQL
+   * @param collection
+   * @param body
+   */
   async createAsyncIterator<T>(
     collection: Collection<T>,
-    body: QueryBodyType<T>
+    body: QueryBodyType<T>,
+    subscriptionOptions: SubscriptionProcessorOptionsType = {}
   ): Promise<AsyncIterator<any>> {
     const channel = uuid();
 
@@ -58,22 +67,27 @@ export class SubscriptionStore {
       // We have to wait on the resolve to execute
       // Because if this happens too fast
       process.nextTick(async () => {
-        const handler = await this.createSubscription(collection, body, {
-          onAdded: (document) => {
-            publish(GraphQLSubscriptionEvent.ADDED, document);
+        const handler = await this.createSubscription(
+          collection,
+          body,
+          {
+            onAdded: (document) => {
+              publish(GraphQLSubscriptionEvent.ADDED, document);
+            },
+            onChanged: (document, changeSet) => {
+              publish(GraphQLSubscriptionEvent.CHANGED, {
+                _id: document._id,
+                ...changeSet,
+              });
+            },
+            onRemoved: (document) => {
+              publish(GraphQLSubscriptionEvent.REMOVED, {
+                _id: document._id,
+              });
+            },
           },
-          onChanged: (document, changeSet) => {
-            publish(GraphQLSubscriptionEvent.CHANGED, {
-              _id: document._id,
-              ...changeSet,
-            });
-          },
-          onRemoved: (document) => {
-            publish(GraphQLSubscriptionEvent.REMOVED, {
-              _id: document._id,
-            });
-          },
-        });
+          subscriptionOptions
+        );
 
         publish(GraphQLSubscriptionEvent.READY, {});
 
@@ -86,9 +100,15 @@ export class SubscriptionStore {
     });
   }
 
+  /**
+   * This is designed to work with GraphQL for counting
+   * @param collection
+   * @param filters
+   */
   async createAsyncIteratorForCounting<T>(
     collection: Collection<T>,
-    filters: FilterQuery<T> = {}
+    filters: FilterQuery<T> = {},
+    subscriptionOptions: SubscriptionProcessorOptionsType = {}
   ): Promise<AsyncIterator<any>> {
     const channel = uuid();
 
@@ -113,7 +133,8 @@ export class SubscriptionStore {
           onRemoved: (document) => {
             ready && publish(handler.documentStore.length);
           },
-        }
+        },
+        subscriptionOptions
       );
       ready = true;
       publish(handler.documentStore.length);
@@ -126,7 +147,8 @@ export class SubscriptionStore {
   async createSubscription<T>(
     collection: Collection<T>,
     body: QueryBodyType,
-    eventOptions?: ISubscriptionEventOptions
+    eventOptions: ISubscriptionEventOptions = {},
+    subscriptionOptions: SubscriptionProcessorOptionsType = {}
   ): Promise<SubscriptionHandler<any>> {
     if (!collection[LIVE_BEHAVIOR_MARKER]) {
       console.warn(
@@ -138,18 +160,23 @@ export class SubscriptionStore {
     }
     this.cleanupBody(body);
 
-    const id = SubscriptionStore.getSubscriptionId(collection, body);
-    // first we find if there's a processor for this id
+    const id = SubscriptionStore.getSubscriptionId(
+      collection,
+      body,
+      subscriptionOptions
+    );
 
-    // let foundProcessor = null;
-    // TODO: must fix this, as this gives a weird error when using multiple subscriptions on GraphQL
     let foundProcessor = this.processors.find(
       (processor) => processor.id == id
     );
 
     // if it doesn't exist, we create the processor
     if (!foundProcessor) {
-      foundProcessor = this.createProcessor(collection, body);
+      foundProcessor = this.createProcessor(
+        collection,
+        body,
+        subscriptionOptions
+      );
       await foundProcessor.start();
     } else {
       this.isDebug &&
@@ -247,13 +274,15 @@ export class SubscriptionStore {
 
   createProcessor<T>(
     collection: Collection<T>,
-    body: QueryBodyType
+    body: QueryBodyType,
+    subscriptionOptions: SubscriptionProcessorOptionsType = {}
   ): SubscriptionProcessor<any> {
     const processor = new SubscriptionProcessor(
       this.messenger,
       this.isDebug,
       collection,
-      body
+      body,
+      subscriptionOptions
     );
 
     this.processors.push(processor);
@@ -272,9 +301,18 @@ export class SubscriptionStore {
     );
   }
 
-  static getSubscriptionId(collection: Collection, body: QueryBodyType) {
+  static getSubscriptionId(
+    collection: Collection,
+    body: QueryBodyType,
+    subscriptionOptions: SubscriptionProcessorOptionsType = {}
+  ) {
     // We need to ensure that first level cannot be a function
-    return collection.collectionName + ":" + JSON.stringify(body);
+    let prefix = "";
+    if (subscriptionOptions.channels) {
+      prefix += subscriptionOptions.channels.join(",") + ":";
+    }
+
+    return prefix + collection.collectionName + ":" + JSON.stringify(body);
   }
 }
 
