@@ -29,13 +29,13 @@ export function CheckPermission(
       PermissionService
     );
 
-    let search;
+    let search: IPermissionSearchFilter;
 
     if (typeof permissions === "function") {
       search = await permissions(_, args, ctx, ast);
     } else {
       search = {
-        permissions,
+        permission: permissions,
       };
     }
 
