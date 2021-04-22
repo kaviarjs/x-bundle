@@ -44,7 +44,7 @@ export function CheckPermission(
       search.domain = PERMISSION_DEFAULT_DOMAIN;
     }
 
-    const hasPermissions = permissionService.has(search);
+    const hasPermissions = await permissionService.has(search);
 
     if (!hasPermissions) {
       throw new UserNotAuthorizedException();
