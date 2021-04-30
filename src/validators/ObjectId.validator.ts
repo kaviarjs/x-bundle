@@ -14,7 +14,11 @@ export class ObjectIdSchema extends yup.mixed {
   }
 
   _typeCheck(value) {
-    return ObjectId.isValid(value);
+    try {
+      return ObjectId.isValid(value);
+    } catch (e) {
+      return false;
+    }
   }
 }
 
