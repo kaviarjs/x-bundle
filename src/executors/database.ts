@@ -182,8 +182,12 @@ export function ToDocumentInsert(
   field = "document"
 ) {
   return async function (_, args, ctx, ast) {
-    const collection = ctx.container.get(collectionClass);
-    const result = await collection.insertOne(args[field]);
+    const collection: Collection = ctx.container.get(collectionClass);
+    const result = await collection.insertOne(args[field], {
+      context: {
+        userId: ctx.userId,
+      },
+    });
 
     return result.insertedId;
   };
@@ -209,10 +213,14 @@ export function ToDocumentUpdateByID<T>(
   }
 
   return async function (_, args, ctx, ast) {
-    const collection = ctx.container.get(collectionClass);
+    const collection: Collection = ctx.container.get(collectionClass);
     const _id = await idArgumentResolver(args);
 
-    await collection.updateOne({ _id }, await mutateResolver(args));
+    await collection.updateOne({ _id }, await mutateResolver(args), {
+      context: {
+        userId: ctx.userId,
+      },
+    });
 
     return _id;
   };
