@@ -1,5 +1,5 @@
+import { toModel } from "@kaviar/ejson";
 import { ValidatorService } from "@kaviar/validator-bundle";
-import { plainToClass } from "class-transformer";
 
 export interface IToModelExecutorOptions {
   field?: string;
@@ -11,7 +11,7 @@ export function ToModel(model: any, options: IToModelExecutorOptions = {}) {
   }
 
   return async function ToModel(_, args, ctx, ast) {
-    args[options.field] = plainToClass(model, args[options.field]);
+    args[options.field] = toModel(model, args[options.field]);
   };
 }
 
