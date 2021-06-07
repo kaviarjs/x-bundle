@@ -125,7 +125,7 @@ export function Live(): BehaviorType {
         }
 
         const context = e.data.context;
-        const updatedIds = context[LiveDataInfoTransfer].documentIds;
+        const updatedIds = context[LiveDataInfoTransfer]?.documentIds || [];
 
         updatedIds.forEach((_id) => {
           messenger.publish(

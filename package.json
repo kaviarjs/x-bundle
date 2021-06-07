@@ -1,7 +1,7 @@
 {
   "name": "@kaviar/x-bundle",
   "version": "1.4.4",
-  "description": "X-way is a feature-rich solution with fast prototyping in mind for KaviarJS",
+  "description": "X-Framework is a feature-rich solution with fast prototyping in mind for KaviarJS",
   "main": "dist/index.js",
   "repository": {
     "type": "git",

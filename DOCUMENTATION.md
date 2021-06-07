@@ -1,4 +1,4 @@
-The X-way is a set of tools that beautifully bridges the gap between your API Layer (GraphQL), your database (MongoDB), and your service layer. It is thought with fast-prototyping in mind but code scalability as well.
+The X-Framework is a set of tools that beautifully bridges the gap between your API Layer (GraphQL), your database (MongoDB), and your service layer. It is thought with fast-prototyping in mind but code scalability as well.
 
 It has the following tools:
 
@@ -7,7 +7,7 @@ It has the following tools:
 - A defined way for standard CRUD interfaces
 - Validator Transformers (Date, ObjectId, UniqueDatabaseField)
 
-The family of X-way bundles is currently composed of:
+The family of X-Framework bundles is currently composed of:
 
 - X-Generator which uses Kaviar's Terminal Technology to develop applications fast.
 - X-Password-Bundle which links Security, Mongo, Apollo to create a unified experience
@@ -27,7 +27,7 @@ const kernel = new Kernel({
       // You should take these from environment, the reason we ask them is for easy routing
       // However, they are optional.
 
-      // The URL of the application, your website (helpful for other bundles in the X-way ecosystem)
+      // The URL of the application, your website (helpful for other bundles in the X-Framework ecosystem)
       appUrl: "http://localhost:3000",
       // The URL of the API endpoint
       rootUrl: "http://localhost:4000",
@@ -38,7 +38,7 @@ const kernel = new Kernel({
 
 ## Executors
 
-Just as a reminder the executors are functions that help us do re-usable stuff easier for GraphQL resolvers. Feel free to freshen up your memory by going to the [Executor Documentation](https://kaviarjs.com/docs/package-executor)
+Because our [resolvers can be chains of functions](https://www.kaviarjs.com/docs/package-graphql#resolvers), we have created a set of them that allow us to easily operate within X-Framework and do things from fetching stuff from database to securing the request and even delegating to other services.
 
 ### Database
 
