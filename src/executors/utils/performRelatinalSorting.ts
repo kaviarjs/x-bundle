@@ -15,9 +15,9 @@ export function performRelationalSorting(
     const parts = key.split(".");
     const [linkName, ...restParts] = parts;
     if (collectionClass.links[linkName]) {
-      const collection = container.get(collectionClass);
+      const collection = container.get<Collection>(collectionClass);
 
-      pipeline.push(lookup(collection, linkName), {
+      pipeline.push(lookup(collection.collection, linkName), {
         $sort: {
           [key]: sort[key],
         },
