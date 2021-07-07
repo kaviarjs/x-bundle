@@ -1,8 +1,8 @@
 import { Constructor, Token } from "@kaviar/core";
 
 export function ToService<T>(
-  serviceClass: Constructor<T> | any,
-  methodName: string,
+  serviceClass: Constructor<T>,
+  methodName: keyof T,
   argumentMapper?: (args, ctx, ast) => any[]
 ) {
   if (!argumentMapper) {
